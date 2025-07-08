@@ -1,4 +1,5 @@
 data:
   aes-cipher:
-    iv-length: ${IV_LENGTH}
-    transformation: ${TRANSFORMATION}
+    iv-length: ${AES_IV_LENGTH}
+    transformation: ${AES_TRANSFORMATION}
+    secret-key: ${AES_SECRET}

@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: oauth-practice
+
+  config:
+    import:
+      - classpath:properties/aes-data.yaml

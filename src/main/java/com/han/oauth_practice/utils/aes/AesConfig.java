@@ -1,6 +1,5 @@
-package com.han.oauth_practice.security;
+package com.han.oauth_practice.utils.aes;
 
-import com.han.oauth_practice.utils.aes.AesUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

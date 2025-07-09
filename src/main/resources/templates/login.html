@@ -1,0 +1,8 @@
+<h1>로그인</h1>
+<ul>
+    <li th:each="client : ${clients}">
+        <a th:href="@{'/oauth2/authorization/' + ${client.registrationId}}">
+            로그인 with <span th:text="${client.clientName}"></span>
+        </a>
+    </li>
+</ul>

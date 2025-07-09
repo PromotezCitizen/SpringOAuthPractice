@@ -5,3 +5,6 @@ spring:
   config:
     import:
       - classpath:properties/aes-data.yaml
+      - classpath:properties/mariadb.yaml
+      - classpath:properties/oauth-provider.yaml
+      - classpath:properties/redis.yaml

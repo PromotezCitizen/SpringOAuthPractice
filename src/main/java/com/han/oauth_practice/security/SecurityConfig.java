@@ -28,9 +28,9 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth -> oauth
                         .loginPage("/login") // <-- 인증이 필요한 경로로 들어갔을 때 리다이렉트 하는 경로
-//                        .authorizationEndpoint(endpoint -> endpoint
-//                                .authorizationRequestResolver(authorizationRequestResolver)
-//                        )
+                        .authorizationEndpoint(endpoint -> endpoint
+                                .authorizationRequestResolver(authorizationRequestResolver)
+                        )
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .failureHandler(oauth2FailureHandler)
                         .successHandler(oauth2SuccessHandler)

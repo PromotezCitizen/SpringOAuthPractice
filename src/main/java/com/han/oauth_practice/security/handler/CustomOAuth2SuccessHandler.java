@@ -32,11 +32,11 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         OAuth2AccessToken accessToken = authorizedClient.getAccessToken();
         OAuth2RefreshToken refreshToken = authorizedClient.getRefreshToken();
 
-        if (refreshToken == null) {
-            System.out.printf("%s(%s)\n\n", accessToken.getTokenValue(), accessToken.getExpiresAt());
-        } else {
-            System.out.printf("%s(%s)\n%s(%s)\n\n", accessToken.getTokenValue(), accessToken.getExpiresAt(), refreshToken.getTokenValue(), refreshToken.getExpiresAt());
-        }
+//        if (refreshToken == null) {
+//            System.out.printf("%s(%s)\n\n", accessToken.getTokenValue(), accessToken.getExpiresAt());
+//        } else {
+//            System.out.printf("%s(%s)\n%s(%s)\n\n", accessToken.getTokenValue(), accessToken.getExpiresAt(), refreshToken.getTokenValue(), refreshToken.getExpiresAt());
+//        }
 
 
         response.sendRedirect("http://localhost:8080");

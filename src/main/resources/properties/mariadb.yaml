@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mariadb://${DB_HOST:localhost}:${DB_PORT:3306}/youtube
+    url: jdbc:mariadb://${DB_HOST:localhost}:${DB_PORT:3306}/oauthpractice
     driver-class-name: org.mariadb.jdbc.Driver
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:mariadb}
@@ -10,3 +10,5 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
+    hibernate:
+      ddl-auto: update

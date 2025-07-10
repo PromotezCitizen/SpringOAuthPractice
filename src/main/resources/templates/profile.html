@@ -22,5 +22,12 @@
         <p th:text="${provider}"></p>
     </li>
 </ul>
+
+<p>탈퇴</p>
+<form th:action="@{/signout}" method="post">
+    <div>
+        <button type="submit">Sign out</button>
+    </div>
+</form>
 </body>
 </html>

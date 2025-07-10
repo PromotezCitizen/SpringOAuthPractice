@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
-        <title>Login</title>
+        <title>Signup</title>
     </head>
     <body>
-        <h2>Login</h2>
+        <h2>Signup</h2>
         <a th:href="@{/}">to main</a>
 
         <div th:if="${param.error}" style="color: red;">
@@ -14,7 +14,7 @@
             You have been logged out.
         </div>
 
-        <form th:action="@{/login}" method="post">
+        <form th:action="@{/signup}" method="post">
             <div>
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" autofocus="autofocus" />
@@ -24,12 +24,12 @@
                 <input type="password" id="password" name="password" />
             </div>
             <div>
-                <button type="submit">Log in</button>
+                <label for="password-re">Re-input Password:</label>
+                <input type="password" id="password-re" name="passwordRe" />
             </div>
-        </form>
-
-        <form th:action="@{/signup}" method="get">
-            <button type="submit">Sign up</button>
+            <div>
+                <button type="submit">Sign up</button>
+            </div>
         </form>
     </body>
 </html>

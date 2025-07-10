@@ -12,4 +12,6 @@ public interface MemberOAuthRepository extends JpaRepository<MemberOAuth, Long> 
     Optional<MemberOAuth> findByProviderAndSub(String provider, String sub);
     List<MemberOAuth> findByMemberId(UUID uid);
     List<MemberOAuth> findByMember(Member member);
+    void deleteAllByMemberId(UUID uid);
+    void deleteAllByMember(Member member);
 }

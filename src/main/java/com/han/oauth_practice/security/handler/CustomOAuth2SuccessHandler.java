@@ -18,6 +18,7 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepo
 import org.springframework.security.oauth2.core.OAuth2RefreshToken;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -32,6 +33,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
     private final GlobalDataStore globalDataStore;
 
     @Override
+    @Transactional
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         OAuth2AuthenticationToken authenticationToken = (OAuth2AuthenticationToken) authentication;
 
@@ -51,6 +53,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
                 .ifPresentOrElse(
                         oauth -> {
                             Member member = oauth.getMember();
+                            oauth.setRefreshToken(refreshToken.getTokenValue());
                             if (member == null) { // 연동 안됨
                                 setTempInfo(response, tempUUID, registrationId, sub);
                                 try {

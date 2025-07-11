@@ -1,6 +1,7 @@
 package com.han.oauth_practice.security;
 
 import com.han.oauth_practice.member.repository.MemberRepository;
+import com.han.oauth_practice.security.filter.CustomLogoutFilter;
 import com.han.oauth_practice.security.filter.CustomUsernamePasswordAuthenticationFilter;
 import com.han.oauth_practice.security.handler.CustomOAuth2FailureHandler;
 import com.han.oauth_practice.security.handler.CustomOAuth2SuccessHandler;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @RequiredArgsConstructor
@@ -27,7 +29,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter
+                                                   CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter,
+                                                   CustomLogoutFilter customLogoutFilter
     ) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
@@ -53,6 +56,7 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/") // <-- 로그아웃 후 리다이렉트 하는 경로
                 );
 
+        http.addFilterBefore(customLogoutFilter, LogoutFilter.class);
         http.addFilterBefore(customUsernamePasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -64,4 +68,7 @@ public class SecurityConfig {
                                                                                                  OAuthService oAuthService) {
         return new CustomUsernamePasswordAuthenticationFilter(aesUtil, memberRepository, oAuthService);
     }
+
+    @Bean
+    public CustomLogoutFilter customLogoutFilter() { return new CustomLogoutFilter(); }
 }

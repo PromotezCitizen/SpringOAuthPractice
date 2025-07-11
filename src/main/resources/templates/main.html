@@ -7,5 +7,8 @@
 <a th:href="@{/login}">to login</a>
 <br/>
 <a th:href="@{/member}">to profile</a>
+<form th:action="@{/logout}" method="post">
+    <button type="submit">logout</button>
+</form>
 </body>
 </html>

@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -52,53 +53,63 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         memberOAuthRepository.findByProviderAndSub(registrationId, authenticationToken.getName())
                 .ifPresentOrElse(
                         oauth -> {
-                            Member member = oauth.getMember();
-                            oauth.setRefreshToken(refreshToken.getTokenValue());
-                            if (member == null) { // 연동 안됨
-                                setTempInfo(response, tempUUID, registrationId, sub);
-                                try {
-                                    response.sendRedirect("http://localhost:8080/signup");
-                                } catch (IOException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            } else { // 연동 됨
-                                CookieUtil.add(response, "X-User-Id", member.getId().toString());
-                                try {
-                                    response.sendRedirect("http://localhost:8080");
-                                } catch (IOException e) {
-                                    throw new RuntimeException(e);
-                                }
+                            try {
+                                ifMemberOAuthisPresent(oauth, response, registrationId, sub, tempUUID, refreshToken);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
                             }
                         },
                         () -> {
-                            assert refreshToken != null;
-                            MemberOAuth memberOAuth = new MemberOAuth(registrationId, sub, refreshToken.getTokenValue());
-
                             Cookie[] cookies = request.getCookies();
-                            Arrays.stream(cookies).filter(cookie -> "X-User-Id".equals(cookie.getName()))
-                                    .findFirst()
-                                    .ifPresentOrElse(
-                                            cookie -> {
-                                                String uid = cookie.getValue();
-                                                memberRepository.findById(UUID.fromString(uid)).ifPresent(memberOAuth::setMember);
-                                                try {
-                                                    response.sendRedirect("http://localhost:8080");
-                                                } catch (IOException e) {
-                                                    throw new RuntimeException(e);
-                                                }
-                                            },
-                                            () -> {
-                                                setTempInfo(response, tempUUID, registrationId, sub);
-                                                try {
-                                                    response.sendRedirect("http://localhost:8080/signup");
-                                                } catch (IOException e) {
-                                                    throw new RuntimeException(e);
-                                                }
-                                            }
-                                    );
-                            memberOAuthRepository.save(memberOAuth);
+                            assert refreshToken != null; // 첫 oauth 로그인에는 무조건 refresh token이 온다.
+                            try {
+                                ifMemberOAuthisNotPresent(cookies, response, registrationId, sub, tempUUID, refreshToken);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
                 );
+    }
+
+    @Transactional
+    private void ifMemberOAuthisPresent(MemberOAuth memberOAuth,
+                                        HttpServletResponse response,
+                                        String registrationId,
+                                        String sub,
+                                        UUID tempUUID,
+                                        OAuth2RefreshToken refreshToken) throws IOException {
+        Member member = memberOAuth.getMember();
+        if (refreshToken != null) memberOAuth.setRefreshToken(refreshToken.getTokenValue());
+
+        if (member == null) { // 연동 안됨
+            setTempInfo(response, tempUUID, registrationId, sub);
+            response.sendRedirect("http://localhost:8080/signup");
+        } else { // 연동 됨
+            CookieUtil.add(response, "X-User-Id", member.getId().toString());
+            response.sendRedirect("http://localhost:8080");
+        }
+    }
+
+    @Transactional
+    private void ifMemberOAuthisNotPresent(Cookie[] cookies,
+                                           HttpServletResponse response,
+                                           String registrationId,
+                                           String sub,
+                                           UUID tempUUID,
+                                           OAuth2RefreshToken refreshToken) throws IOException {
+        MemberOAuth memberOAuth = new MemberOAuth(registrationId, sub, refreshToken.getTokenValue());
+
+        Optional<Cookie> cookieOpt = Arrays.stream(cookies).filter(cookie -> "X-User-Id".equals(cookie.getName()))
+                .findFirst();
+        if (cookieOpt.isPresent()) {
+            String uid = cookieOpt.get().getValue();
+            memberRepository.findById(UUID.fromString(uid)).ifPresent(memberOAuth::setMember);
+            response.sendRedirect("http://localhost:8080");
+        } else {
+            setTempInfo(response, tempUUID, registrationId, sub);
+            response.sendRedirect("http://localhost:8080/signup");
+        }
+        memberOAuthRepository.save(memberOAuth);
     }
 
     private void setTempInfo(HttpServletResponse response, UUID tempUUID, String registrationId, String sub) {

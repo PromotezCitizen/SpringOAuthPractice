@@ -16,6 +16,8 @@ public class CookieUtil {
         delete(response, name, false, false);
     }
 
+    public static void delete(HttpServletResponse response, Cookie cookie) { delete(response, cookie.getName(), cookie.isHttpOnly(), cookie.getSecure()); }
+
     public static void add(HttpServletResponse response,
                            String name,
                            String value,

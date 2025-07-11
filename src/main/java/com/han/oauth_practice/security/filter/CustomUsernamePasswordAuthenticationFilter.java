@@ -42,7 +42,10 @@ public class CustomUsernamePasswordAuthenticationFilter extends OncePerRequestFi
             String decryptedPassword;
             try {
                 decryptedPassword = aesUtil.decrypt(encryptedPassword);
-                if (!decryptedPassword.equals(password)) return;
+                if (!decryptedPassword.equals(password)) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

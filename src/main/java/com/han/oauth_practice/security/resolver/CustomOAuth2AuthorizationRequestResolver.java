@@ -35,7 +35,6 @@ public class CustomOAuth2AuthorizationRequestResolver implements OAuth2Authoriza
         Map<String, Object> extraParams = new HashMap<>(req.getAdditionalParameters());
         if ("google".equals(clientRegistrationId)) {
             extraParams.put("access_type", "offline");
-            extraParams.put("prompt", "consent");
         }
 
         return OAuth2AuthorizationRequest.from(req)

@@ -2,6 +2,7 @@ package com.han.oauth_practice.security.filter;
 
 import com.han.oauth_practice.member.repository.MemberRepository;
 import com.han.oauth_practice.member.entity.Member;
+import com.han.oauth_practice.security.service.OAuthService;
 import com.han.oauth_practice.utils.aes.AesUtil;
 import com.han.oauth_practice.utils.cookie.CookieUtil;
 import jakarta.servlet.FilterChain;
@@ -23,6 +24,7 @@ import java.util.Optional;
 public class CustomUsernamePasswordAuthenticationFilter extends OncePerRequestFilter {
     private final AesUtil aesUtil;
     private final MemberRepository memberRepository;
+    private final OAuthService oAuthService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -49,6 +51,8 @@ public class CustomUsernamePasswordAuthenticationFilter extends OncePerRequestFi
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+
+            oAuthService.linkOAuth(request.getCookies(), member, response);
 
             UserDetails userDetails = User.builder()
                     .username(username)

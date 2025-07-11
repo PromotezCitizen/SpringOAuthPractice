@@ -6,6 +6,7 @@ import com.han.oauth_practice.security.handler.CustomOAuth2FailureHandler;
 import com.han.oauth_practice.security.handler.CustomOAuth2SuccessHandler;
 import com.han.oauth_practice.security.resolver.CustomOAuth2AuthorizationRequestResolver;
 import com.han.oauth_practice.security.service.CustomOAuth2UserService;
+import com.han.oauth_practice.security.service.OAuthService;
 import com.han.oauth_practice.utils.aes.AesUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -58,7 +59,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter(AesUtil aesUtil, MemberRepository memberRepository) {
-        return new CustomUsernamePasswordAuthenticationFilter(aesUtil, memberRepository);
+    public CustomUsernamePasswordAuthenticationFilter customUsernamePasswordAuthenticationFilter(AesUtil aesUtil,
+                                                                                                 MemberRepository memberRepository,
+                                                                                                 OAuthService oAuthService) {
+        return new CustomUsernamePasswordAuthenticationFilter(aesUtil, memberRepository, oAuthService);
     }
 }

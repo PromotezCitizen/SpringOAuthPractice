@@ -1,5 +1,6 @@
 package com.han.oauth_practice.security.service;
 
+import com.han.oauth_practice.member.entity.Member;
 import com.han.oauth_practice.member.entity.MemberOAuth;
 import com.han.oauth_practice.member.repository.MemberOAuthRepository;
 import com.han.oauth_practice.member.repository.MemberRepository;
@@ -7,7 +8,11 @@ import com.han.oauth_practice.security.dto.OAuthRenewResponseDto;
 import com.han.oauth_practice.security.objects.OAuth2ClientSecret;
 import com.han.oauth_practice.security.objects.OAuth2UnlinkProperties;
 import com.han.oauth_practice.security.objects.OAuth2UnlinkProperty;
+import com.han.oauth_practice.security.objects.OAuthClientInfo;
+import com.han.oauth_practice.utils.cookie.CookieUtil;
+import com.han.oauth_practice.utils.data_store.GlobalDataStore;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -15,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -33,6 +39,19 @@ public class OAuthService {
     private final MemberRepository memberRepository;
     private final MemberOAuthRepository memberOAuthRepository;
     private final OAuth2UnlinkProperties oAuth2UnlinkProperties;
+    private final GlobalDataStore globalDataStore;
+
+    @Transactional
+    public void linkOAuth(Cookie[] cookies, Member member, HttpServletResponse response) {
+        Arrays.stream(cookies).filter(cookie -> "X-User-Temp".equals(cookie.getName()))
+                .findFirst()
+                .ifPresent(cookie -> {
+                    OAuthClientInfo oAuthClientInfo = (OAuthClientInfo) globalDataStore.get(cookie.getValue());
+                    memberOAuthRepository.findByProviderAndSub(oAuthClientInfo.getProvider(), oAuthClientInfo.getSub())
+                            .ifPresent(memberOAuth -> memberOAuth.setMember(member));
+                    CookieUtil.delete(response, cookie);
+                });
+    }
 
     public void unlinkOAuth(String provider, OAuth2UnlinkProperty unlinkProperty, String refreshToken, OAuth2ClientSecret secret, String sub) {
         HttpHeaders headers = new HttpHeaders();

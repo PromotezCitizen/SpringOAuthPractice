@@ -6,12 +6,13 @@
     <body>
         <h2>Signup</h2>
         <a th:href="@{/}">to main</a>
+        <a th:href="@{/login}">to login</a>
 
-        <div th:if="${param.error}" style="color: red;">
-            Invalid username or password.
+        <div th:if="${error} == 'dup'" style="color: red;">
+            중복된 id 존재
         </div>
-        <div th:if="${param.logout}" style="color: green;">
-            You have been logged out.
+        <div th:if="${error} == 'pw'" style="color: red;">
+            비밀번호 불일치
         </div>
 
         <form th:action="@{/signup}" method="post">

@@ -1,5 +1,6 @@
 package com.han.oauth_practice.member;
 
+import com.han.oauth_practice.security.service.OAuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -15,15 +16,15 @@ import java.util.*;
 @RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
-    private final MemberService memberService;
+    private final OAuthService oAuthService;
 
     @GetMapping
     public String getProfile(HttpServletRequest request, Model model) {
         Cookie[] cookies = request.getCookies();
-        List<String> providers = memberService.getMemberOAuthProviders(cookies);
+        List<String> providers = oAuthService.getMemberOAuthProviders(cookies);
         model.addAttribute("providers", providers);
 
-        List<ClientRegistration> clients = memberService.getOAuthRegistration();
+        List<ClientRegistration> clients = oAuthService.getOAuthRegistration();
 
         model.addAttribute("clients", clients);
         return "profile";

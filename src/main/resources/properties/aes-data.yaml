@@ -1,5 +1,5 @@
 data:
   aes-cipher:
-    iv-length: ${AES_IV_LENGTH}
-    transformation: ${AES_TRANSFORMATION}
+    iv-length: 16
+    transformation: AES/CBC/PKCS5Padding
     secret-key: ${AES_SECRET}

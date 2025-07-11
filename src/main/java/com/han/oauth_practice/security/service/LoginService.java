@@ -57,7 +57,7 @@ public class LoginService {
                             .ifPresent(memberOAuth -> {
                                 memberOAuth.setMember(member);
                             });
-                    CookieUtil.delete(servletResponse, "X-User-Temp");
+                    CookieUtil.delete(servletResponse, cookie);
                 });
     }
 
@@ -83,7 +83,7 @@ public class LoginService {
                         } catch (Exception e) {}
                     }
 
-                    CookieUtil.delete(response, cookie.getName());
+                    CookieUtil.delete(response, cookie);
 
                     memberRepository.deleteById(UUID.fromString(uid));
                 });

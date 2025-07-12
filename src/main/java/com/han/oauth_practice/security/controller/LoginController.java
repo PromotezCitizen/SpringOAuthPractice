@@ -6,9 +6,9 @@ import com.han.oauth_practice.security.service.OAuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,11 +21,13 @@ public class LoginController {
     private final OAuthService oAuthService;
 
     @GetMapping("/")
+    @Cacheable
     public String getMainPage(Model model) {
         return "main";
     }
 
     @GetMapping("/login")
+    @Cacheable
     public String getLoginPage(Model model) {
         List<ClientRegistration> clients = oAuthService.getOAuthRegistration();
         model.addAttribute("clients", clients);
@@ -34,13 +36,13 @@ public class LoginController {
     }
 
     @GetMapping("/signup")
+    @Cacheable
     public String getSignupPage(Model model) {
         return "signup";
     }
 
     // TODO: 이미 연동된 계정이 있는 경우 조회 후 연동하도록 로그인 페이지로 이동
     @PostMapping("/signup")
-    @Transactional
     public String signup(HttpServletRequest servletRequest, HttpServletResponse servletResponse, @ModelAttribute SignupDto dto, Model model) throws Exception {
         if (!dto.getPassword().equals(dto.getPasswordRe())) {
             model.addAttribute("error", "pw");

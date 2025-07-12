@@ -53,7 +53,16 @@ public class OAuthService {
                 });
     }
 
-    public void unlinkOAuth(String provider, OAuth2UnlinkProperty unlinkProperty, String refreshToken, OAuth2ClientSecret secret, String sub) {
+    public void unlinkOAuth(MemberOAuth memberOAuth) {
+        String provider = memberOAuth.getProvider();
+        OAuth2UnlinkProperty property = getTokenUriMap().get(provider);
+        OAuth2ClientSecret secret = getOAuthSecretMap().get(provider);
+
+        if (property.getUnlinkUri() == null || property.getUnlinkUri().isEmpty()) return;
+        unlinkOAuth(memberOAuth.getProvider(), property, memberOAuth.getRefreshToken(), secret, memberOAuth.getSub());
+    }
+
+    private void unlinkOAuth(String provider, OAuth2UnlinkProperty unlinkProperty, String refreshToken, OAuth2ClientSecret secret, String sub) {
         HttpHeaders headers = new HttpHeaders();
         Map<String, String> body = new HashMap<>();
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();

@@ -18,8 +18,12 @@
 
 <p>연동됨</p>
 <ul>
-    <li th:each="provider : ${providers}">
-        <p th:text="${provider}"></p>
+    <li th:each="provider : ${providers}" style="margin: 5px">
+        <form th:action="@{/member/unlink/oauth}" method="post">
+            <label th:for="${provider}" th:text="${provider}"></label>
+            <input th:id=${provider} th:value="${provider}" name="provider" hidden="hidden"/>
+            <button type="submit">연동 해제</button>
+        </form>
     </li>
 </ul>
 

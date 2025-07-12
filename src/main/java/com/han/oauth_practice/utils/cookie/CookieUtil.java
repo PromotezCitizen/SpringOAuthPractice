@@ -1,19 +1,14 @@
 package com.han.oauth_practice.utils.cookie;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
 
 public class CookieUtil {
-    @Value("${data.redirect.frontend-uri}")
-    private String cookieDomain;
 
     private static String COOKIE_DOMAIN;
 
-    @PostConstruct
-    public void init() {
-        COOKIE_DOMAIN = cookieDomain.split(":")[0];
+    public static void setCookieDomain(String domain) {
+        COOKIE_DOMAIN = domain.split(":")[0];
     }
 
     public static void delete(HttpServletResponse response,

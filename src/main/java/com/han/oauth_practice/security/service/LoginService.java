@@ -13,6 +13,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -41,6 +42,7 @@ public class LoginService {
 
     }
 
+    @Transactional
     private void signup(Cookie[] cookies, SignupDto dto, HttpServletResponse servletResponse) throws Exception {
         String encryptedPassword = aesUtil.encrypt(dto.getPassword());
         Member member = new Member(dto.getUsername(), encryptedPassword);
@@ -59,6 +61,7 @@ public class LoginService {
                 });
     }
 
+    @Transactional
     public void signOut(Cookie[] cookies, HttpServletResponse response) {
         Arrays.stream(cookies)
                 .filter(cookie -> "X-User-Id".equals(cookie.getName()))

@@ -2,18 +2,23 @@ package com.han.oauth_practice.security.controller;
 
 import com.han.oauth_practice.security.dto.SignupDto;
 import com.han.oauth_practice.security.service.LoginService;
+import com.han.oauth_practice.security.service.OAuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequiredArgsConstructor
 public class LoginController {
     private final LoginService loginService;
+    private final OAuthService oAuthService;
 
     @GetMapping("/")
     public String getMainPage(Model model) {
@@ -22,6 +27,9 @@ public class LoginController {
 
     @GetMapping("/login")
     public String getLoginPage(Model model) {
+        List<ClientRegistration> clients = oAuthService.getOAuthRegistration();
+        model.addAttribute("clients", clients);
+
         return "login";
     }
 

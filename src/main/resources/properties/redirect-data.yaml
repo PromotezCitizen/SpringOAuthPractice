@@ -1,0 +1,4 @@
+data:
+  redirect:
+    frontend-uri: ${FRONTEND_REDIRECT_URI:localhost:8080}
+    frontend-protocol: ${FRONTEND_PROTOCOL:http}

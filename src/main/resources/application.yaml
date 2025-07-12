@@ -7,3 +7,4 @@ spring:
       - classpath:properties/aes-data.yaml
       - classpath:properties/mariadb.yaml
       - classpath:properties/oauth-provider.yaml
+      - classpath:properties/redirect-data.yaml

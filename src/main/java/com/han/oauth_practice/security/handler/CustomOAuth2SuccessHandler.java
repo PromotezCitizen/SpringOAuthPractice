@@ -11,6 +11,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -32,6 +34,11 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
     private final MemberOAuthRepository memberOAuthRepository;
     private final MemberRepository memberRepository;
     private final GlobalDataStore globalDataStore;
+
+    @Value("${data.redirect.frontend-uri}")
+    private String frontendUri;
+    @Value("${data.redirect.frontend-protocol}")
+    private String frontendProtocol;
 
     @Override
     @Transactional
@@ -83,10 +90,10 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 
         if (member == null) { // 연동 안됨
             setTempInfo(response, tempUUID, registrationId, sub);
-            response.sendRedirect("http://localhost:8080/signup");
+            response.sendRedirect(getFrontendUri("/signup"));
         } else { // 연동 됨
             CookieUtil.add(response, "X-User-Id", member.getId().toString());
-            response.sendRedirect("http://localhost:8080");
+            response.sendRedirect(getFrontendUri("/member"));
         }
     }
 
@@ -104,10 +111,10 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         if (cookieOpt.isPresent()) {
             String uid = cookieOpt.get().getValue();
             memberRepository.findById(UUID.fromString(uid)).ifPresent(memberOAuth::setMember);
-            response.sendRedirect("http://localhost:8080");
+            response.sendRedirect(getFrontendUri("/member"));
         } else {
             setTempInfo(response, tempUUID, registrationId, sub);
-            response.sendRedirect("http://localhost:8080/signup");
+            response.sendRedirect(getFrontendUri("/signup"));
         }
         memberOAuthRepository.save(memberOAuth);
     }
@@ -119,5 +126,10 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
                 .sub(sub)
                 .build();
         globalDataStore.put(tempUUID.toString(), info);
+    }
+
+    @Cacheable
+    private String getFrontendUri(String subUri) {
+        return frontendProtocol + "://" + frontendUri + subUri;
     }
 }

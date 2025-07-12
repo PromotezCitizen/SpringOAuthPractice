@@ -109,6 +109,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         Optional<Cookie> cookieOpt = Arrays.stream(cookies).filter(cookie -> "X-User-Id".equals(cookie.getName()))
                 .findFirst();
         if (cookieOpt.isPresent()) {
+            System.out.println(cookieOpt.get().getDomain() + "/" + cookieOpt.get().getName());
             String uid = cookieOpt.get().getValue();
             memberRepository.findById(UUID.fromString(uid)).ifPresent(memberOAuth::setMember);
             response.sendRedirect(getFrontendUri("/member"));

@@ -64,7 +64,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends OncePerRequestFi
                     new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-            CookieUtil.add(response, "X-User-Id", member.getId().toString());
+            CookieUtil.add(response, "X-User-Id", member.getId().toString(), 60 * 60 * 24, true, true);
             response.sendRedirect("/");
             return;
         }

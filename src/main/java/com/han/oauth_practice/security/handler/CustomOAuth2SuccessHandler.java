@@ -92,7 +92,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
             setTempInfo(response, tempUUID, registrationId, sub);
             response.sendRedirect(getFrontendUri("/signup"));
         } else { // 연동 됨
-            CookieUtil.add(response, "X-User-Id", member.getId().toString());
+            CookieUtil.add(response, "X-User-Id", member.getId().toString(), 60 * 60 * 24, true, true);
             response.sendRedirect(getFrontendUri("/member"));
         }
     }
@@ -120,7 +120,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
     }
 
     private void setTempInfo(HttpServletResponse response, UUID tempUUID, String registrationId, String sub) {
-        CookieUtil.add(response, "X-User-Temp", tempUUID.toString(), 60 * 10);
+        CookieUtil.add(response, "X-User-Temp", tempUUID.toString(), 60 * 10, true, true);
         OAuthClientInfo info = OAuthClientInfo.builder()
                 .provider(registrationId)
                 .sub(sub)

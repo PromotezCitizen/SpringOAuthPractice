@@ -1,9 +1,21 @@
 package com.han.oauth_practice.utils.cookie;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 
 public class CookieUtil {
+    @Value("${data.redirect.frontend-uri}")
+    private String cookieDomain;
+
+    private static String COOKIE_DOMAIN;
+
+    @PostConstruct
+    public void init() {
+        COOKIE_DOMAIN = cookieDomain.split(":")[0];
+    }
+
     public static void delete(HttpServletResponse response,
                               String name,
                               boolean isHttpOnly,
@@ -53,7 +65,7 @@ public class CookieUtil {
                                        boolean isHttpOnly,
                                        boolean isSecure) {
         Cookie cookie = new Cookie(name, value);
-        cookie.setDomain("localhost");
+        cookie.setDomain(COOKIE_DOMAIN);
         cookie.setPath("/");
         cookie.setMaxAge(maxAge);
         cookie.setHttpOnly(isHttpOnly);

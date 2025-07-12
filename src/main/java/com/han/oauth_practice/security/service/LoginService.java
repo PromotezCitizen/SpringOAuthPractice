@@ -5,8 +5,6 @@ import com.han.oauth_practice.member.entity.MemberOAuth;
 import com.han.oauth_practice.member.repository.MemberOAuthRepository;
 import com.han.oauth_practice.member.repository.MemberRepository;
 import com.han.oauth_practice.security.dto.SignupDto;
-import com.han.oauth_practice.security.objects.OAuth2ClientSecret;
-import com.han.oauth_practice.security.objects.OAuth2UnlinkProperty;
 import com.han.oauth_practice.security.objects.OAuthClientInfo;
 import com.han.oauth_practice.utils.aes.AesUtil;
 import com.han.oauth_practice.utils.cookie.CookieUtil;
@@ -67,24 +65,11 @@ public class LoginService {
                 .findFirst()
                 .ifPresent(cookie -> {
                     String uid = cookie.getValue();
-                    Map<String, OAuth2UnlinkProperty> tokenUriMap = oAuthService.getTokenUriMap();
-                    Map<String, OAuth2ClientSecret> secretMap = oAuthService.getOAuthSecretMap();
 
                     List<MemberOAuth> oAuthList = memberOAuthRepository.findByMemberId(UUID.fromString(uid));
-                    for (MemberOAuth memberOAuth: oAuthList) {
-                        String provider = memberOAuth.getProvider();
-                        OAuth2UnlinkProperty property = tokenUriMap.get(provider);
-                        OAuth2ClientSecret secret = secretMap.get(provider);
-                        if (property.getUnlinkUri() == null || property.getUnlinkUri().isEmpty()) {
-                            continue;
-                        }
-                        try {
-                            oAuthService.unlinkOAuth(provider, property, memberOAuth.getRefreshToken(), secret, memberOAuth.getSub());
-                        } catch (Exception e) {}
-                    }
+                    for (MemberOAuth memberOAuth: oAuthList) oAuthService.unlinkOAuth(memberOAuth);
 
                     CookieUtil.delete(response, cookie);
-
                     memberRepository.deleteById(UUID.fromString(uid));
                 });
     }
